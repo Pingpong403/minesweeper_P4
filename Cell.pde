@@ -135,8 +135,8 @@ class Cell {
   }
   
   public boolean isMouseIn() {
-    return mouseX > pos.getX() && mouseX < pos.getX() + CELL_SIZE && 
-           mouseY > pos.getY() && mouseY < pos.getY() + CELL_SIZE;
+    return mouseX >= pos.getX() && mouseX < pos.getX() + CELL_SIZE && 
+           mouseY >= pos.getY() && mouseY < pos.getY() + CELL_SIZE;
   }
   
   public boolean interact(boolean rightClick) {
