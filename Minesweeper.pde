@@ -94,6 +94,11 @@ void draw() {
         gameOver = gameGrid.autoReveal(clickPos) || gameOver;
       }
       
+      if (gameOver) {
+        // reveal mines & show incorrect flags (doMinesSummary)
+        gameGrid.doMinesSummary();
+      }
+      
       // Every time the mouse is clicked, reveal spaces around cells with 0 neighboring mines
       gameGrid.revealZeroNeighbors();
     }

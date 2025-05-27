@@ -64,6 +64,7 @@ class Cell {
     float x = pos.getX();
     float y = pos.getY();
     float mid = CELL_SIZE / 2;
+    float margin = (float)CELL_SIZE * 0.1;
     noStroke();
     if (!isEdge) {
       if (!isRevealed) {
@@ -73,7 +74,6 @@ class Cell {
         fill(isClicked ? 220 : 80);
         triangle(x + CELL_SIZE, y + CELL_SIZE, x, y + CELL_SIZE, x + CELL_SIZE, y);
         // 'raised' center
-        float margin = (float)CELL_SIZE * 0.1;
         fill(isClicked ? PRESSED_GRAY.getValue() : BASE_GRAY.getValue());
         rect(x + margin, y + margin, CELL_SIZE - margin * 2, CELL_SIZE - margin * 2);
         // flag
@@ -104,7 +104,15 @@ class Cell {
         strokeCap(SQUARE);
         line(x, y + lineSize / 2, x + CELL_SIZE, y + lineSize / 2);
         line(x + lineSize / 2, y, x + lineSize / 2, y + CELL_SIZE);
-        if (isMine) {
+        if (isFlagged) {
+          // just a red 'X'
+          noFill();
+          stroke(255, 0, 0);
+          strokeWeight(CELL_SIZE / 10);
+          line(x + margin, y + margin, x + CELL_SIZE - margin, y + CELL_SIZE - margin);
+          line(x + margin, y + CELL_SIZE - margin, x + CELL_SIZE - margin, y + margin);
+        }
+        else if (isMine) {
           // black circle
           noStroke();
           fill(0);

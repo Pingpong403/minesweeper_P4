@@ -165,6 +165,18 @@ class Grid {
     return mineTripped;
   }
   
+  public void doMinesSummary() {
+    for (int j = 0; j < cells.size(); j++) {
+      for (int i = 0; i < cells.get(0).size(); i++) {
+        Cell cell = cells.get(j).get(i);
+        // reveal untouched mines
+        if (cell.isMine() && !cell.isFlagged() && !cell.isRevealed()) cell.setRevealed(true);
+        // set wrong flags
+        else if (cell.isFlagged() && !cell.isMine()) cell.setRevealed(true);
+      }
+    }
+  }
+  
   public void display() {
     for (Vector<Cell> row : cells) {
       for (Cell cell : row) {
