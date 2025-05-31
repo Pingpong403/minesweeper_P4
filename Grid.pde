@@ -83,7 +83,7 @@ class Grid {
       for (int i = 0; i < cells.get(0).size(); i++) {
         Cell cell = cells.get(j).get(i);
         if (!cell.isEdge() && !cell.isMine()) { // only target empty cells on the field
-          cell.setNeighborMines(checkNeighbors(new GridPosition(i, j)));
+          cell.setNeighbors(checkNeighbors(new GridPosition(i, j)));
         }
       }
     }
@@ -105,7 +105,7 @@ class Grid {
     for (int j = 0; j < cells.size(); j++) {
       for (int i = 0; i < cells.get(0).size(); i++) {
         Cell cell = cells.get(j).get(i);
-        if (cell.isRevealed() && !cell.isMine() && !cell.isEdge() && cell.getNeighborMines() == 0) {
+        if (cell.isRevealed() && !cell.isMine() && !cell.isEdge() && cell.getNeighbors() == 0) {
           GridPosition position = new GridPosition(i, j);
           queue.add(position);
           visited.add(position);
@@ -121,8 +121,8 @@ class Grid {
           Cell neighbor = cells.get(j).get(i);
           GridPosition neighborPosition = new GridPosition(i, j);
           if (!neighbor.isRevealed() && !neighbor.isEdge() && !visited.contains(neighborPosition)) {
-            neighbor.setRevealed(true);
-            if (neighbor.getNeighborMines() == 0) {
+            neighbor.setRevealed();
+            if (neighbor.getNeighbors() == 0) {
               queue.add(neighborPosition);
               visited.add(neighborPosition);
             }
@@ -150,7 +150,7 @@ class Grid {
     }
     boolean mineTripped = false;
     // then reveal all non-flag spaces around
-    if (flagCount == cells.get(cClick.y).get(cClick.x).getNeighborMines()) {
+    if (flagCount == cells.get(cClick.y).get(cClick.x).getNeighbors()) {
       for (int j = cClick.y - 1; j < cClick.y + 2; j++) {
         for (int i = cClick.x - 1; i < cClick.x + 2; i++) {
           if (!cells.get(j).get(i).isFlagged()) {
@@ -170,9 +170,11 @@ class Grid {
       for (int i = 0; i < cells.get(0).size(); i++) {
         Cell cell = cells.get(j).get(i);
         // reveal untouched mines
-        if (cell.isMine() && !cell.isFlagged() && !cell.isRevealed()) cell.setRevealed(true);
+        if (cell.isMine() && !cell.isFlagged() && !cell.isRevealed() && !cell.isExploded()) {
+          cell.setRevealed();
+        }
         // set wrong flags
-        else if (cell.isFlagged() && !cell.isMine()) cell.setRevealed(true);
+        else if (cell.isFlagged() && !cell.isMine()) cell.setWrongFlagged();
       }
     }
   }
