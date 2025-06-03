@@ -67,7 +67,7 @@ void draw() {
     
     // Mouse events
     
-    // select mine if mouse is depressed only
+    // select cell if mouse is depressed only
     if (mousePressed && mouseButton != RIGHT) {
       gameGrid.getSelectedCell().setClicked(true);
     }

@@ -108,78 +108,86 @@ class Cell {
     noStroke();
     if (!isEdge) {
       if (state == CellState.hidden || state == CellState.flagged || state == CellState.misflagged) {
-        // lighter and darker '3D' edges
-        fill(isClicked ? 80 : 220);
-        triangle(x, y, x + CELL_SIZE, y, x, y + CELL_SIZE);
-        fill(isClicked ? 220 : 80);
-        triangle(x + CELL_SIZE, y + CELL_SIZE, x, y + CELL_SIZE, x + CELL_SIZE, y);
-        // 'raised' center
-        fill(isClicked ? PRESSED_GRAY.getValue() : BASE_GRAY.getValue());
-        rect(x + margin, y + margin, CELL_SIZE - margin * 2, CELL_SIZE - margin * 2);
+        drawCover(x, y, margin);
         if (state == CellState.flagged || state == CellState.misflagged) {
-          // flag
-          float unitSize = CELL_SIZE * 0.1;
-          float cellX = pos.getX();
-          float cellY = pos.getY();
-          fill(0);
-          rect(cellX + unitSize * 2, cellY + CELL_SIZE - unitSize * 3, CELL_SIZE - unitSize * 4, unitSize);
-          rect(cellX + unitSize * 3, cellY + CELL_SIZE - unitSize * 4, CELL_SIZE - unitSize * 6, unitSize * 1.5);
-          rect(cellX + CELL_SIZE / 2 - unitSize / 2, cellY + CELL_SIZE / 2 - unitSize, unitSize, unitSize * 4);
-          fill(255, 0, 0);
-          rect(cellX + CELL_SIZE / 2 - unitSize * 0.5, cellY + unitSize * 2, unitSize, unitSize * 3);
-          rect(cellX + CELL_SIZE / 2 - unitSize * 1.5, cellY + unitSize * 2.5, unitSize * 2, unitSize * 2);
-          rect(cellX + CELL_SIZE / 2 - unitSize * 2.5, cellY + unitSize * 3, unitSize * 2, unitSize);
+          drawFlag(x, y);
           if (state == CellState.misflagged) {
-            // red 'X'
-            noFill();
-            stroke(128, 0, 0);
-            strokeWeight(CELL_SIZE / 10);
-            strokeCap(SQUARE);
-            line(x + margin, y + margin, x + CELL_SIZE - margin, y + CELL_SIZE - margin);
-            line(x + margin, y + CELL_SIZE - margin, x + CELL_SIZE - margin, y + margin);
+            drawRedX(x, y, margin);
           }
         }
       }
       else {
-        // blank background
-        if (state != CellState.exploded) BASE_GRAY.setFill();
-        else fill(255, 0, 0);
-        rect(x, y, CELL_SIZE, CELL_SIZE);
-        // lines on top and left
-        float lineSize = CELL_SIZE / 30;
-        stroke(BASE_GRAY.getValue() - 30);
-        noFill();
-        strokeWeight(lineSize);
-        strokeCap(SQUARE);
-        line(x, y + lineSize / 2, x + CELL_SIZE, y + lineSize / 2);
-        line(x + lineSize / 2, y, x + lineSize / 2, y + CELL_SIZE);
-        if (isMine) {
-          // black circle
-          noStroke();
-          fill(0);
-          ellipse(x + mid, y + mid, CELL_SIZE * 0.6, CELL_SIZE * 0.6);
-          // 4 black lines for spikes
-          noFill();
-          strokeWeight(CELL_SIZE / 15);
-          strokeCap(ROUND);
-          stroke(0);
-          line(x + mid, y + CELL_SIZE * 0.1, x + mid, y + CELL_SIZE * 0.9);
-          line(x + CELL_SIZE * 0.1, y + mid, x + CELL_SIZE * 0.9, y + mid);
-          line(x + CELL_SIZE * 0.23, y + CELL_SIZE * 0.23, x + CELL_SIZE * 0.77, y + CELL_SIZE * 0.77);
-          line(x + CELL_SIZE * 0.23, y + CELL_SIZE * 0.77, x + CELL_SIZE * 0.77, y + CELL_SIZE * 0.23);
-        }
-        else if (neighbors > 0) {
-          numberColors.get(neighbors).setFill();
-          textAlign(CENTER);
-          textSize((float)CELL_SIZE * 0.9);
-          text(neighbors, pos.getX() + CELL_SIZE / 2, pos.getY() + CELL_SIZE * 0.8);
-        }
+        drawBG(x, y);
+        drawContents(x, y, mid);
       }
     }
-    // DEBUG
-    //else { // show edges
-    //  fill(255, 0, 0);
-    //  rect(x, y, CELL_SIZE, CELL_SIZE);
-    //}
+  }
+  
+  private void drawBG(float x, float y) {
+    // gray or red background
+    if (state != CellState.exploded) BASE_GRAY.setFill();
+    else fill(255, 0, 0);
+    rect(x, y, CELL_SIZE, CELL_SIZE);
+    // lines on top and left
+    float lineSize = CELL_SIZE / 30;
+    stroke(BASE_GRAY.getValue() - 30);
+    noFill();
+    strokeWeight(lineSize);
+    strokeCap(SQUARE);
+    line(x, y + lineSize / 2, x + CELL_SIZE, y + lineSize / 2);
+    line(x + lineSize / 2, y, x + lineSize / 2, y + CELL_SIZE);
+  }
+  private void drawContents(float x, float y, float mid) {
+    if (isMine) {
+      // black circle
+      noStroke();
+      fill(0);
+      ellipse(x + mid, y + mid, CELL_SIZE * 0.6, CELL_SIZE * 0.6);
+      // 4 black lines for spikes
+      noFill();
+      strokeWeight(CELL_SIZE / 15);
+      strokeCap(ROUND);
+      stroke(0);
+      line(x + mid, y + CELL_SIZE * 0.1, x + mid, y + CELL_SIZE * 0.9);
+      line(x + CELL_SIZE * 0.1, y + mid, x + CELL_SIZE * 0.9, y + mid);
+      line(x + CELL_SIZE * 0.23, y + CELL_SIZE * 0.23, x + CELL_SIZE * 0.77, y + CELL_SIZE * 0.77);
+      line(x + CELL_SIZE * 0.23, y + CELL_SIZE * 0.77, x + CELL_SIZE * 0.77, y + CELL_SIZE * 0.23);
+    }
+    else if (neighbors > 0) {
+      numberColors.get(neighbors).setFill();
+      textAlign(CENTER);
+      textSize((float)CELL_SIZE * 0.9);
+      text(neighbors, pos.getX() + CELL_SIZE / 2, pos.getY() + CELL_SIZE * 0.8);
+    }
+  }
+  private void drawCover(float x, float y, float margin) {
+    // lighter and darker '3D' edges
+    fill((isClicked && state != CellState.flagged) ? 80 : 220);
+    triangle(x, y, x + CELL_SIZE, y, x, y + CELL_SIZE);
+    fill((isClicked && state != CellState.flagged) ? 220 : 80);
+    triangle(x + CELL_SIZE, y + CELL_SIZE, x, y + CELL_SIZE, x + CELL_SIZE, y);
+    // 'raised' center
+    fill((isClicked && state != CellState.flagged) ? PRESSED_GRAY.getValue() : BASE_GRAY.getValue());
+    rect(x + margin, y + margin, CELL_SIZE - margin * 2, CELL_SIZE - margin * 2);
+  }
+  private void drawFlag(float x, float y) {
+    float pixel = CELL_SIZE * 0.1;
+    fill(0);
+    rect(x + pixel * 2, y + CELL_SIZE - pixel * 3, CELL_SIZE - pixel * 4, pixel);
+    rect(x + pixel * 3, y + CELL_SIZE - pixel * 4, CELL_SIZE - pixel * 6, pixel * 1.5);
+    rect(x + CELL_SIZE / 2 - pixel / 2, y + CELL_SIZE / 2 - pixel, pixel, pixel * 4);
+    fill(255, 0, 0);
+    rect(x + CELL_SIZE / 2 - pixel * 0.5, y + pixel * 2, pixel, pixel * 3);
+    rect(x + CELL_SIZE / 2 - pixel * 1.5, y + pixel * 2.5, pixel * 2, pixel * 2);
+    rect(x + CELL_SIZE / 2 - pixel * 2.5, y + pixel * 3, pixel * 2, pixel);
+  }
+  private void drawRedX(float x, float y, float margin) {
+    // red 'X'
+    noFill();
+    stroke(128, 0, 0);
+    strokeWeight(CELL_SIZE / 10);
+    strokeCap(SQUARE);
+    line(x + margin, y + margin, x + CELL_SIZE - margin, y + CELL_SIZE - margin);
+    line(x + margin, y + CELL_SIZE - margin, x + CELL_SIZE - margin, y + margin);
   }
 }
