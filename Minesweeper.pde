@@ -20,12 +20,13 @@ Color PRESSED_GRAY = new Color(150);
 // Variables
 boolean firstClick = false;
 boolean gameOver = false;
+boolean gameWin = false;
 
 int gridW = 50; // 50
 int gridH = 35; // 35
 int mineCount = gridW * gridH / 5;
 int revealToWin = gridW * gridH - mineCount;
-int flagCount = 0;
+int revealCount = 0;
 
 // Objects
 Grid gameGrid;
@@ -54,54 +55,64 @@ void setup() {
 void draw() {
   background(255);
   
-  if (!gameOver) {
-    // Mouse events
+  if (!gameOver && !gameWin) {
+    // Initial events
+    
+    // visually de-select all mines
     for (Vector<Cell> row : gameGrid.getCells()) {
-        for (Cell cell : row) {
-          cell.setClicked(false);
-        }
-      }
-    if (mousePressed && mouseButton != RIGHT) {
-      for (Vector<Cell> row : gameGrid.getCells()) {
-        for (Cell cell : row) {
-          if (cell.isMouseIn() && !cell.isFlagged()) cell.setClicked(true);
-          else cell.setClicked(false);
-        }
+      for (Cell cell : row) {
+        cell.setClicked(false);
       }
     }
+    
+    // Mouse events
+    
+    // select mine if mouse is depressed only
+    if (mousePressed && mouseButton != RIGHT) {
+      gameGrid.getSelectedCell().setClicked(true);
+    }
+    
+    // events that happen when mouse is released
     if (mouseChoose) {
       // find cardinal mouse grid position
-      int cardinalX = (int)(mouseX - gameGrid.getPosition().getX()) / CELL_SIZE;
-      int cardinalY = (int)(mouseY - gameGrid.getPosition().getY()) / CELL_SIZE;
-      GridPosition clickPos = new GridPosition(cardinalX, cardinalY);
+      GridPosition clickPos = gameGrid.getSelectedGridPosition();
+      Cell clickedCell = gameGrid.getSelectedCell();
       
-      boolean clickedFlag = gameGrid.getCells().get(cardinalY).get(cardinalX).isFlagged();
+      boolean clickedFlag = clickedCell.isFlagged();
       boolean rightClick = mouseButton == RIGHT;
-      // When a spot is first clicked
+      // when a spot is first clicked
       if (!rightClick && !firstClick && gameGrid.isMouseIn() && !clickedFlag) {
         gameGrid.generateGrid(mines, clickPos);
+        clickPos = gameGrid.getSelectedGridPosition();
         firstClick = true;
       }
       
-      // Single cell interactions
-      for (Vector<Cell> row : gameGrid.getCells()) {
-        for (Cell cell : row) {
-          if (cell.isMouseIn()) gameOver = cell.interact(rightClick);
-        }
-      }
-      Cell cell = gameGrid.getCells().get(cardinalY + 1).get(cardinalX + 1);
-      if (cell.isRevealed() && !rightClick) {
+      // single cell interactions
+      gameOver = clickedCell.interact(rightClick);
+      if (clickedCell.isRevealed() && !rightClick) {
         gameOver = gameGrid.autoReveal(clickPos) || gameOver;
       }
       
       if (gameOver) {
-        // reveal mines & show incorrect flags (doMinesSummary)
+        // reveal mines & show incorrect flags
         gameGrid.doMinesSummary();
       }
       
       // Every time the mouse is clicked, reveal spaces around cells with 0 neighboring mines
       gameGrid.revealZeroNeighbors();
     }
+  }
+  else if (gameOver) {
+    // Initial events
+    
+    // Mouse events
+    
+  }
+  else if (gameWin) {
+    // Initial events
+    
+    // Mouse events
+    
   }
   else {
     
@@ -110,6 +121,6 @@ void draw() {
   // Display
   gameGrid.display();
   
-  // etc.
+  // Misc.
   mouseChoose = false;
 }

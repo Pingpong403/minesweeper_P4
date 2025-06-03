@@ -15,6 +15,24 @@ class Grid {
   public Vector<Vector<Cell>> getCells() { return cells; }
   public Position getPosition() { return pos; }
   
+  public Cell getCell(GridPosition gPos) { return cells.get(gPos.y).get(gPos.x); }
+  public Cell getSelectedCell() {
+    boolean edgesInserted = cells.get(0).get(0).isEdge();
+    float tlC_X = pos.getX();
+    float tlC_Y = pos.getY();
+    int gridX = (int)(mouseX - tlC_X) / CELL_SIZE + (edgesInserted ? 1 : 0);
+    int gridY = (int)(mouseY - tlC_Y) / CELL_SIZE + (edgesInserted ? 1 : 0);
+    return cells.get(gridY).get(gridX);
+  }
+  public GridPosition getSelectedGridPosition() {
+    boolean edgesInserted = cells.get(0).get(0).isEdge();
+    float tlC_X = pos.getX();
+    float tlC_Y = pos.getY();
+    int gridX = (int)(mouseX - tlC_X) / CELL_SIZE + (edgesInserted ? 1 : 0);
+    int gridY = (int)(mouseY - tlC_Y) / CELL_SIZE + (edgesInserted ? 1 : 0);
+    return new GridPosition(gridX, gridY);
+  }
+  
   public Vector<GridPosition> getMines(int w, int h, int count) {
     // fill grid with empty, non-edge cells
     for (int j = 0; j < h; j++) {
@@ -133,16 +151,14 @@ class Grid {
   }
   
   public boolean autoReveal(GridPosition click) {
-    // need to correct click position because of edge cells
-    GridPosition cClick = new GridPosition(click.x + 1, click.y + 1);
     // Mines are excluded
-    if (cells.get(cClick.y).get(cClick.x).isMine()) {
+    if (cells.get(click.y).get(click.x).isMine()) {
       return false;
     }
     // first check if surrounding flags equals cell's number
     int flagCount = 0;
-    for (int j = cClick.y - 1; j < cClick.y + 2; j++) {
-      for (int i = cClick.x - 1; i < cClick.x + 2; i++) {
+    for (int j = click.y - 1; j < click.y + 2; j++) {
+      for (int i = click.x - 1; i < click.x + 2; i++) {
         if (cells.get(j).get(i).isFlagged()) {
           flagCount++;
         }
@@ -150,9 +166,9 @@ class Grid {
     }
     boolean mineTripped = false;
     // then reveal all non-flag spaces around
-    if (flagCount == cells.get(cClick.y).get(cClick.x).getNeighbors()) {
-      for (int j = cClick.y - 1; j < cClick.y + 2; j++) {
-        for (int i = cClick.x - 1; i < cClick.x + 2; i++) {
+    if (flagCount == cells.get(click.y).get(click.x).getNeighbors()) {
+      for (int j = click.y - 1; j < click.y + 2; j++) {
+        for (int i = click.x - 1; i < click.x + 2; i++) {
           if (!cells.get(j).get(i).isFlagged()) {
             cells.get(j).get(i).interact(false);
             if (cells.get(j).get(i).isMine()) {
