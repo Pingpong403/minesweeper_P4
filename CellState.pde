@@ -3,5 +3,5 @@ enum CellState {
   revealed,
   flagged,
   exploded,
-  wrongFlagged
+  misflagged
 };

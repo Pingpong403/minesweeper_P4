@@ -51,7 +51,7 @@ class Cell {
   
   public boolean isRevealed() { return state == CellState.revealed; }
   public boolean isFlagged() { return state ==  CellState.flagged; }
-  public boolean isWrongFlagged() { return state == CellState.wrongFlagged; }
+  public boolean isMisflagged() { return state == CellState.misflagged; }
   public boolean isExploded() { return state == CellState.exploded; }
   
   public boolean test() { return state == CellState.exploded; }
@@ -64,7 +64,7 @@ class Cell {
   
   public void setRevealed() { state = CellState.revealed; }
   public void setExploded() { state = CellState.exploded; }
-  public void setWrongFlagged() { state = CellState.wrongFlagged; }
+  public void setMisflagged() { state = CellState.misflagged; }
   
   public boolean isMouseIn() {
     return mouseX >= pos.getX() && mouseX < pos.getX() + CELL_SIZE && 
@@ -107,7 +107,7 @@ class Cell {
     float margin = (float)CELL_SIZE * 0.1;
     noStroke();
     if (!isEdge) {
-      if (state == CellState.hidden || state == CellState.flagged || state == CellState.wrongFlagged) {
+      if (state == CellState.hidden || state == CellState.flagged || state == CellState.misflagged) {
         // lighter and darker '3D' edges
         fill(isClicked ? 80 : 220);
         triangle(x, y, x + CELL_SIZE, y, x, y + CELL_SIZE);
@@ -116,7 +116,7 @@ class Cell {
         // 'raised' center
         fill(isClicked ? PRESSED_GRAY.getValue() : BASE_GRAY.getValue());
         rect(x + margin, y + margin, CELL_SIZE - margin * 2, CELL_SIZE - margin * 2);
-        if (state == CellState.flagged || state == CellState.wrongFlagged) {
+        if (state == CellState.flagged || state == CellState.misflagged) {
           // flag
           float unitSize = CELL_SIZE * 0.1;
           float cellX = pos.getX();
@@ -129,7 +129,7 @@ class Cell {
           rect(cellX + CELL_SIZE / 2 - unitSize * 0.5, cellY + unitSize * 2, unitSize, unitSize * 3);
           rect(cellX + CELL_SIZE / 2 - unitSize * 1.5, cellY + unitSize * 2.5, unitSize * 2, unitSize * 2);
           rect(cellX + CELL_SIZE / 2 - unitSize * 2.5, cellY + unitSize * 3, unitSize * 2, unitSize);
-          if (state == CellState.wrongFlagged) {
+          if (state == CellState.misflagged) {
             // red 'X'
             noFill();
             stroke(128, 0, 0);

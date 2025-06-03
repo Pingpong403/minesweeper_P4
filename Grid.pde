@@ -174,7 +174,7 @@ class Grid {
           cell.setRevealed();
         }
         // set wrong flags
-        else if (cell.isFlagged() && !cell.isMine()) cell.setWrongFlagged();
+        else if (cell.isFlagged() && !cell.isMine()) cell.setMisflagged();
       }
     }
   }
