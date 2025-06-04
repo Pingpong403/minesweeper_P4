@@ -30,7 +30,7 @@ int revealCount = 0;
 
 // Objects
 Grid gameGrid;
-Vector<GridPosition> mines;
+GridPosition[] mines;
 Vector<Color> numberColors;
 
 void setup() {

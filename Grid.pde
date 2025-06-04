@@ -33,8 +33,43 @@ class Grid {
     return new GridPosition(gridX, gridY);
   }
   
-  public Vector<GridPosition> getMines(int w, int h, int count) {
+  public GridPosition[] getMines(int w, int h, int count) {
     // fill grid with empty, non-edge cells
+    initializeGrid(w, h);
+    
+    // use to keep track of which grid spaces have been filled or not
+    int arrayLen = w * h - 9;
+    GridPosition[] unusedSpaces = new GridPosition[arrayLen];
+    HashSet<Integer> usedIndices = new HashSet<Integer>();
+    
+    // to be returned
+    GridPosition[] mineSpaces = new GridPosition[count];
+    
+    int i = 0;
+    for (int y = 0; y < h; y++) {
+      for (int x = 0; x < w; x++) {
+        // avoid the 3x3 square in the top left
+        if (!(x < 3 && y < 3)) {
+          unusedSpaces[i] = new GridPosition(x, y);
+          i++;
+        }
+      }
+    }
+    
+    Random r = new Random();
+    int randSpace;
+    for (int m = 0; m < count; m++) {
+      do {
+        randSpace = r.nextInt(0, arrayLen);
+      } while (usedIndices.contains(randSpace));
+      mineSpaces[m] = unusedSpaces[randSpace];
+      usedIndices.add(randSpace);
+    }
+    
+    return mineSpaces;
+  }
+  
+  private void initializeGrid(int w, int h) {
     for (int j = 0; j < h; j++) {
       Vector<Cell> row = new Vector<Cell>();
       for (int i = 0; i < w; i++) {
@@ -43,27 +78,9 @@ class Grid {
       }
       cells.add(row); // add the row to the outer Vector
     }
-    
-    Vector<GridPosition> unusedSpaces = new Vector<GridPosition>();
-    Vector<GridPosition> mineSpaces = new Vector<GridPosition>();
-    for (int j = 0; j < h; j++) {
-      for (int i = 0; i < w; i++) {
-        // avoid the 3x3 square in the top left
-        if (!(i < 3 && j < 3)) unusedSpaces.add(new GridPosition(i, j));
-      }
-    }
-    
-    Random r = new Random();
-    for (int m = 0; m < count; m++) {
-      int randSpace = r.nextInt(0, unusedSpaces.size());
-      mineSpaces.add(unusedSpaces.get(randSpace));
-      unusedSpaces.remove(randSpace);
-    }
-    
-    return mineSpaces;
   }
   
-  public void generateGrid(Vector<GridPosition> mines, GridPosition click) {
+  public void generateGrid(GridPosition[] mines, GridPosition click) {
     GridPosition wh = new GridPosition(cells.get(0).size(), cells.size());
     // the 3x3 grid is completely in the top left, so (1, 1)
     int xOffset = click.x - 1;
@@ -80,21 +97,7 @@ class Grid {
     }
     
     // insert edge cells
-    // top row
-    cells.add(0, new Vector<Cell>());
-    for (int i = 0; i < cells.get(1).size() + 2; i++) {
-      cells.get(0).add(new Cell(new Position(pos.getX() + CELL_SIZE * (i - 1), pos.getY() - CELL_SIZE)));
-    }
-    // sides
-    for (int i = 1; i < cells.size(); i++) {
-      cells.get(i).add(cells.get(i).size(), new Cell(new Position(pos.getX() - CELL_SIZE, pos.getY() + CELL_SIZE * (i - 1))));
-      cells.get(i).add(0, new Cell(new Position(pos.getX() + CELL_SIZE * wh.x, pos.getY() + CELL_SIZE * (i - 1))));
-    }
-    // bottom row
-    cells.add(cells.size(), new Vector<Cell>());
-    for (int i = 0; i < cells.get(1).size(); i++) {
-      cells.get(cells.size() - 1).add(new Cell(new Position(pos.getX() + CELL_SIZE * (i - 1), pos.getY() + CELL_SIZE * wh.y)));
-    }
+    insertEdges(wh);
     
     // count mines around each non-mine
     for (int j = 0; j < cells.size(); j++) {
@@ -104,6 +107,32 @@ class Grid {
           cell.setNeighbors(checkNeighbors(new GridPosition(i, j)));
         }
       }
+    }
+  }
+  
+  private void insertEdges(GridPosition dimensions) {
+    // top row
+    cells.add(0, new Vector<Cell>());
+    for (int i = 0; i < cells.get(1).size() + 2; i++) {
+      cells.get(0).add(new Cell(
+        new Position(pos.getX() + CELL_SIZE * (i - 1), pos.getY() - CELL_SIZE)
+      ));
+    }
+    // sides
+    for (int i = 1; i < cells.size(); i++) {
+      cells.get(i).add(cells.get(i).size(), new Cell(
+        new Position(pos.getX() - CELL_SIZE, pos.getY() + CELL_SIZE * (i - 1))
+      ));
+      cells.get(i).add(0, new Cell(
+        new Position(pos.getX() + CELL_SIZE * dimensions.x, pos.getY() + CELL_SIZE * (i - 1))
+      ));
+    }
+    // bottom row
+    cells.add(cells.size(), new Vector<Cell>());
+    for (int i = 0; i < cells.get(1).size(); i++) {
+      cells.get(cells.size() - 1).add(new Cell(
+        new Position(pos.getX() + CELL_SIZE * (i - 1), pos.getY() + CELL_SIZE * dimensions.y)
+      ));
     }
   }
   
@@ -140,6 +169,7 @@ class Grid {
           GridPosition neighborPosition = new GridPosition(i, j);
           if (!neighbor.isRevealed() && !neighbor.isEdge() && !visited.contains(neighborPosition)) {
             neighbor.setRevealed();
+            // add neighbor back into queue if it's also a zero
             if (neighbor.getNeighbors() == 0) {
               queue.add(neighborPosition);
               visited.add(neighborPosition);
