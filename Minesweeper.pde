@@ -102,10 +102,10 @@ void draw() {
       }
       
       // single cell interactions
-      gameOver = clickedCell.interact(rightClick);
       if (clickedCell.isRevealed() && !rightClick) {
-        gameOver = gameGrid.autoReveal(clickPos) || gameOver;
+        gameOver = gameGrid.autoReveal(clickPos);
       }
+      gameOver = clickedCell.interact(rightClick) || gameOver;
       
       if (gameOver) {
         // reveal mines & show incorrect flags
