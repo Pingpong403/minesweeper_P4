@@ -40,5 +40,7 @@ class Color {
   }
   
   public void setFill() { fill(r, g, b); }
+  public void setFill(int a) { fill(r, g, b, a); }
   public void setStroke() { stroke(r, g, b); }
+  public void setStroke(int a) { stroke(r, g, b, a); }
 }

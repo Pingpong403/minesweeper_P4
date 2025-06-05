@@ -28,6 +28,7 @@ Color PRESSED_GRAY = new Color(150);
 boolean firstClick = false;
 boolean gameOver = false;
 boolean gameWin = false;
+int restartDelay = 100;
 
 int gridW = 50; // 50
 int gridH = 35; // 35
@@ -39,6 +40,7 @@ int revealCount = 0;
 Grid gameGrid;
 GridPosition[] mines;
 Vector<Color> numberColors;
+Button restartButton;
 
 void setup() {
   frameRate(5);
@@ -58,6 +60,8 @@ void setup() {
   numberColors.add(new Color(7, 127, 127));
   numberColors.add(new Color(0));
   numberColors.add(new Color(128));
+  
+  restartButton = new Button(new Position(400, 315), 200, 70, "Restart", false);
 }
 
 void draw() {
@@ -112,17 +116,31 @@ void draw() {
       gameGrid.revealZeroNeighbors();
     }
   }
-  else if (gameOver) {
+  else if (gameOver || gameWin) {
+    frameRate(30);
     // Initial events
+    restartDelay--;
+    if (restartDelay < 0) restartDelay = 0;
+    if (restartDelay == 0) restartButton.activate();
     
     // Mouse events
-    
-  }
-  else if (gameWin) {
-    // Initial events
-    
-    // Mouse events
-    
+    if (mousePressed) {
+      if (restartButton.isMouseWithin() && !restartButton.isPressed()){
+        restartButton.toggle();
+      }
+    }
+    if (mouseChoose) {
+      if (restartButton.isMouseWithin()) {
+        mines = gameGrid.getMines(gridW, gridH, mineCount);
+        firstClick = false;
+        gameOver = false;
+        gameWin = false;
+        gameGrid.reset();
+        mines = gameGrid.getMines(gridW, gridH, mineCount);
+        restartButton.deactivate();
+        restartDelay = 100;
+      }
+    }
   }
   else {
     
@@ -130,6 +148,7 @@ void draw() {
   
   // Display
   gameGrid.display();
+  restartButton.display();
   
   // Misc.
   mouseChoose = false;
@@ -142,4 +161,5 @@ void draw() {
   textAlign(RIGHT);
   text((int)frameRate, 1000, 40);
   text(mouseMoving, 1000, 80);
+  text(restartDelay, 1000, 120);
 }

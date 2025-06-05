@@ -238,4 +238,8 @@ class Grid {
     return mouseX > pos.getX() && mouseX < pos.getX() + wh.x * CELL_SIZE && 
            mouseY > pos.getY() && mouseY < pos.getY() + wh.y * CELL_SIZE;
   }
+  
+  public void reset() {
+    cells = new Vector<Vector<Cell>>();
+  }
 }
