@@ -12,6 +12,13 @@ void mouseReleased() {
   // set to false at the end of drawing phase
 }
 
+// CUSTOM MOUSE MOVING TOOL
+int mouseMoving = 0;
+void mouseMoved() {
+  mouseMoving = 20;
+  // decrement by 1 at the end of drawing phase
+}
+
 // CONSTANTS
 int CELL_SIZE = 20;
 Color BASE_GRAY = new Color(170);
@@ -34,6 +41,7 @@ GridPosition[] mines;
 Vector<Color> numberColors;
 
 void setup() {
+  frameRate(5);
   size(1000, 700);
   
   Position gridPos = new Position(500 - CELL_SIZE * ((float)gridW / 2), 350 - CELL_SIZE * ((float)gridH / 2));
@@ -53,6 +61,8 @@ void setup() {
 }
 
 void draw() {
+  if (mouseMoving > 0) frameRate(60);
+  else                 frameRate(5 );
   background(255);
   
   if (!gameOver && !gameWin) {
@@ -123,4 +133,13 @@ void draw() {
   
   // Misc.
   mouseChoose = false;
+  mouseMoving--;
+  if (mouseMoving < 0) mouseMoving = 0;
+  
+  fill(0, 255, 0);
+  noStroke();
+  textSize(30);
+  textAlign(RIGHT);
+  text((int)frameRate, 1000, 40);
+  text(mouseMoving, 1000, 80);
 }

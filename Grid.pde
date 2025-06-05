@@ -214,7 +214,7 @@ class Grid {
   public void doMinesSummary() {
     for (int j = 0; j < cells.size(); j++) {
       for (int i = 0; i < cells.get(0).size(); i++) {
-        Cell cell = cells.get(j).get(i);
+        Cell cell = getCell(new GridPosition(i, j));
         // reveal untouched mines
         if (cell.isMine() && !cell.isFlagged() && !cell.isRevealed() && !cell.isExploded()) {
           cell.setRevealed();
