@@ -112,6 +112,10 @@ void draw() {
         gameOver = gameGrid.autoReveal(clickPos);
       }
       gameOver = clickedCell.interact(rightClick) || gameOver;
+      if (rightClick && clickedCell.isMine()) {
+        if (clickedCell.isFlagged()) correctFlags++;
+        else correctFlags--;
+      }
       
       if (gameOver) {
         // reveal mines & show incorrect flags
@@ -167,5 +171,5 @@ void draw() {
   textAlign(RIGHT);
   text((int)frameRate, 1000, 40);
   text(mouseMoving, 1000, 80);
-  text(restartDelay, 1000, 120);
+  text(correctFlags, 1000, 120);
 }
