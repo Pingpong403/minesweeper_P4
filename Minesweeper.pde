@@ -174,11 +174,12 @@ void draw() {
   mouseMoving--;
   if (mouseMoving < 0) mouseMoving = 0;
   
-  fill(0, 255, 0);
-  noStroke();
-  textSize(30);
-  textAlign(RIGHT);
-  text((int)frameRate, 1000, 40);
-  text(mouseMoving, 1000, 80);
-  text(correctFlags, 1000, 120);
+  // debug
+  //fill(0, 255, 0);
+  //noStroke();
+  //textSize(30);
+  //textAlign(RIGHT);
+  //text((int)frameRate, 1000, 40);
+  //text(mouseMoving, 1000, 80);
+  //text(correctFlags, 1000, 120);
 }
