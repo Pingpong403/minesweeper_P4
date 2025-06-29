@@ -33,8 +33,7 @@ int restartDelay = 100;
 int gridW = 50; // 50
 int gridH = 35; // 35
 int mineCount = gridW * gridH / 5;
-int revealToWin = gridW * gridH - mineCount;
-int revealCount = 0;
+int correctFlags = 0;
 
 // Objects
 Grid gameGrid;
@@ -42,11 +41,16 @@ GridPosition[] mines;
 Vector<Color> numberColors;
 Button restartButton;
 
+void settings() {
+  size(CELL_SIZE * gridW, CELL_SIZE * gridH);
+}
+
 void setup() {
   frameRate(5);
-  size(1000, 700);
   
-  Position gridPos = new Position(500 - CELL_SIZE * ((float)gridW / 2), 350 - CELL_SIZE * ((float)gridH / 2));
+  int centerX = width / 2;
+  int centerY = height / 2;
+  Position gridPos = new Position(centerX - CELL_SIZE * ((float)gridW / 2), centerY - CELL_SIZE * ((float)gridH / 2));
   gameGrid = new Grid(gridPos);
   mines = gameGrid.getMines(gridW, gridH, mineCount);
   
@@ -61,7 +65,9 @@ void setup() {
   numberColors.add(new Color(0));
   numberColors.add(new Color(128));
   
-  restartButton = new Button(new Position(400, 315), 200, 70, "Restart", false);
+  int buttonW = width / 5;
+  int buttonH = height / 10;
+  restartButton = new Button(new Position(width / 2 - buttonW / 2, height / 2 - buttonH / 2), buttonW, buttonH, "Restart", false);
 }
 
 void draw() {
