@@ -32,8 +32,7 @@ int restartDelay = 100;
 
 int gridW = 50; // 50
 int gridH = 35; // 35
-//int mineCount = gridW * gridH / 5;
-int mineCount = 5;
+int mineCount = gridW * gridH / 5;
 int correctFlags = 0;
 
 // Objects
