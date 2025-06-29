@@ -15,7 +15,7 @@ void mouseReleased() {
 // CUSTOM MOUSE MOVING TOOL
 int mouseMoving = 0;
 void mouseMoved() {
-  mouseMoving = 20;
+  mouseMoving = 40;
   // decrement by 1 at the end of drawing phase
 }
 
@@ -32,7 +32,8 @@ int restartDelay = 100;
 
 int gridW = 50; // 50
 int gridH = 35; // 35
-int mineCount = gridW * gridH / 5;
+//int mineCount = gridW * gridH / 5;
+int mineCount = 5;
 int correctFlags = 0;
 
 // Objects
@@ -117,6 +118,8 @@ void draw() {
         else correctFlags--;
       }
       
+      if (correctFlags == mineCount) gameWin = true;
+      
       if (gameOver) {
         // reveal mines & show incorrect flags
         gameGrid.doMinesSummary();
@@ -129,8 +132,7 @@ void draw() {
   else if (gameOver || gameWin) {
     frameRate(30);
     // Initial events
-    restartDelay--;
-    if (restartDelay < 0) restartDelay = 0;
+    if (restartDelay > 0) restartDelay--;
     if (restartDelay == 0) restartButton.activate();
     
     // Mouse events
@@ -145,6 +147,7 @@ void draw() {
         firstClick = false;
         gameOver = false;
         gameWin = false;
+        correctFlags = 0;
         gameGrid.reset();
         mines = gameGrid.getMines(gridW, gridH, mineCount);
         restartButton.deactivate();
@@ -159,6 +162,13 @@ void draw() {
   // Display
   gameGrid.display();
   restartButton.display();
+  if (gameWin) {
+    fill(100, 255, 255);
+    noStroke();
+    textSize(40);
+    textAlign(CENTER);
+    text("You Won!", width / 2, height / 2 - 60);
+  }
   
   // Misc.
   mouseChoose = false;
