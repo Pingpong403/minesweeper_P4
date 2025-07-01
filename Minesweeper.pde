@@ -26,6 +26,7 @@ int lastMouseButton = 0;
 int CELL_SIZE = 20;
 Color BASE_GRAY = new Color(170);
 Color PRESSED_GRAY = new Color(150);
+int CONFETTI_COUNT = 100;
 
 // Variables
 boolean firstClick = false;
@@ -35,7 +36,8 @@ int restartDelay = 100;
 
 int gridW = 50; // 50
 int gridH = 35; // 35
-int mineCount = gridW * gridH / 5;
+//int mineCount = gridW * gridH / 5;
+int mineCount = 1;
 int correctFlags = 0;
 
 // Objects
@@ -43,6 +45,7 @@ Grid gameGrid;
 GridPosition[] mines;
 Vector<Color> numberColors;
 Button restartButton;
+ConfettiBurst[] confettis;
 
 void settings() {
   size(CELL_SIZE * gridW, CELL_SIZE * gridH);
@@ -97,7 +100,7 @@ void draw() {
       if (lastMouseButton != RIGHT) {
         gameGrid.getSelectedCell().setClicked(true);
       }
-  }
+    }
     
     // events that happen when mouse is released
     if (mouseChoose) {
@@ -124,7 +127,13 @@ void draw() {
         else correctFlags--;
       }
       
-      if (correctFlags == mineCount) gameWin = true;
+      if (correctFlags == mineCount) {
+        confettis = new ConfettiBurst[CONFETTI_COUNT];
+        for (int i = 0; i < CONFETTI_COUNT; i++) {
+          confettis[i] = new ConfettiBurst(new Position(random(width), random(height)));
+        }
+        gameWin = true;
+      }
       
       if (gameOver) {
         // reveal mines & show incorrect flags
@@ -174,6 +183,10 @@ void draw() {
     textSize(40);
     textAlign(CENTER);
     text("You Won!", width / 2, height / 2 - 60);
+    for (int i = 0; i < CONFETTI_COUNT; i++) {
+      confettis[i].update();
+      confettis[i].display();
+    }
   }
   
   // Misc.

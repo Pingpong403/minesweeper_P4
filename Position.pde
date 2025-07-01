@@ -34,4 +34,10 @@ class Position {
   
   public float getX() { return x; }
   public float getY() { return y; }
+  
+  public void setX(float x) { this.x = x; }
+  public void setY(float y) { this.y = y; }
+  
+  public void addX(float amt) { x += amt; }
+  public void addY(float amt) { y += amt; }
 }
