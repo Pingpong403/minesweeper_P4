@@ -19,6 +19,9 @@ void mouseMoved() {
   // decrement by 1 at the end of drawing phase
 }
 
+// USED TO CORRECT PROCESSING MOUSE SHENANIGANS
+int lastMouseButton = 0;
+
 // CONSTANTS
 int CELL_SIZE = 20;
 Color BASE_GRAY = new Color(170);
@@ -87,10 +90,14 @@ void draw() {
     
     // Mouse events
     
-    // select cell if mouse is depressed only
-    if (mousePressed && mouseButton != RIGHT) {
-      gameGrid.getSelectedCell().setClicked(true);
-    }
+    if (mousePressed) {
+      // make mouse button persistent
+      lastMouseButton = mouseButton;
+      // select cell if mouse is depressed only
+      if (lastMouseButton != RIGHT) {
+        gameGrid.getSelectedCell().setClicked(true);
+      }
+  }
     
     // events that happen when mouse is released
     if (mouseChoose) {
@@ -99,7 +106,7 @@ void draw() {
       Cell clickedCell = gameGrid.getSelectedCell();
       
       boolean clickedFlag = clickedCell.isFlagged();
-      boolean rightClick = mouseButton == RIGHT;
+      boolean rightClick = lastMouseButton == RIGHT;
       // when a spot is first clicked
       if (!rightClick && !firstClick && gameGrid.isMouseIn() && !clickedFlag) {
         gameGrid.generateGrid(mines, clickPos);
